@@ -3,7 +3,7 @@ version: 2.1
 orbs:
   aws-cli: circleci/aws-cli@2.0.3
 
-job:
+jobs:
   lint:
     docker:
       - image: circleci/python:3.6.7-stretch
