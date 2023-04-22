@@ -31,8 +31,23 @@ jobs:
           command: |
             . venv/bin/activate
             make lint
+  
+  build-image:
+    docker:
+      - image: docker:latest
+    steps:
+      - checkout
+      - run:
+          name: Build Image
+          command: |
+            docker build -t hello-wolrd .
+            docker tag hello-world vasudevla/hello-world
+            docker login
+            docker push vasudevla/hello-world
 
 workflows:
   build_and_deploy:
     jobs:
       - lint
+      - build-image
+          requires: [lint]
