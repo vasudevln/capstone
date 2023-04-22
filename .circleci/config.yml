@@ -71,6 +71,28 @@ jobs:
           command: |
              echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
              docker push "${IMAGE_TAG}"
+  
+  create-cluster:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: yum install -y tar gzip
+      - run:
+          name: Create cluster and nodegroup
+          command: |
+             aws cloudformation deploy --template-file infra.yml --stack-name "capstone-cluster" --parameter-overrides file://infra-parameters.json  --tags project=capstone --capabilities CAPABILITY_NAMED_IAM
+  setup-kubectl:
+    docker:
+      - image:
+    steps:
+      - checkout
+      - run:
+          name: update kubeconfig
+          command: |
+             aws eks --region us-east-1 update-kubeconfig --name capstone-cluster
 
 workflows:
   build_and_deploy:
@@ -80,3 +102,7 @@ workflows:
           requires: [lint]
       - push-image:
           requires: [build-image]
+      - create-cluster:
+          requires: [push-image]
+      - setup-kubectl:
+          requires: [create-cluster]
