@@ -40,10 +40,12 @@ jobs:
       - image: docker:latest
     steps:
       - checkout
+      - setup_remote_docker
       - run:
-          name: Build Image
+          name: Build and Upload Image
           command: |
             docker build -t hello-wolrd .
+            docker image ps
             docker tag hello-world vasudevla/hello-world
             docker login
             docker push vasudevla/hello-world
