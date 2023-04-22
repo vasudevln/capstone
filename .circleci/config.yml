@@ -86,9 +86,12 @@ jobs:
              aws cloudformation deploy --template-file infra.yml --stack-name "capstone-cluster" --parameter-overrides file://infra-parameters.json  --tags project=capstone --capabilities CAPABILITY_NAMED_IAM
   setup-kubectl:
     docker:
-      - image:
+      - image: amazon/aws-cli
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: yum install -y tar gzip
       - run:
           name: update kubeconfig
           command: |
