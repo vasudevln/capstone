@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: Lint files
-          command:
+          command: |
             . venv/bin/activate
             make lint
 
