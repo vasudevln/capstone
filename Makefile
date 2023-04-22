@@ -4,6 +4,7 @@ setup:
 
 install:
 	pip install --upgrade pip &&\
+	pip install pylint &&\
 		pip install -r requirements.txt
 
 lint:
