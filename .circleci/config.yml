@@ -17,6 +17,8 @@ jobs:
           name: Install Dependencies
           command: |
             sudo apt update
+            sudo pip install --upgrade pip
+	          sudo pip install pylint
             sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64 &&\
             sudo chmod +x /bin/hadolint
             python3 -m venv venv
