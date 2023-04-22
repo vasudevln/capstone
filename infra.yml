@@ -1,0 +1,83 @@
+Description: Creates required EKS cluster
+Parameters:
+    EKSIAMRoleName:
+      Description: AMI to use for our base image
+      Type: String
+    EKSNodeIAMRoleName:
+      Description: AMI to use for our base image
+      Type: String
+
+Resources:
+  EKSIAMRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - eks.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      RoleName: !Ref EKSIAMRoleName
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
+
+  EKSNodeIAMRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      RoleName: !Ref EKSNodeIAMRoleName
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+  
+  EKSCluster:
+    Type: AWS::EKS::Cluster
+    Properties: 
+      Name: CaptsoneCluster
+      ResourcesVpcConfig: 
+         SecurityGroupIds:
+         - sg-081fd18da261622bf
+         SubnetIds:
+         - subnet-077dc998df54a9965
+         - subnet-00610e0e07ba8ba62
+         - subnet-0bb3bb59266451697
+         - subnet-068b5e45ee629a370
+         - subnet-0837b8a85d6910d54
+      RoleArn:
+          "Fn::GetAtt": ["EKSIAMRole", "Arn"]
+    DependsOn: EKSIAMRole
+
+  EKSNodeGroup:
+    Type: AWS::EKS::Nodegroup
+    Properties: 
+      ClusterName: CaptsoneCluster
+      NodegroupName: myNodeGroup
+      NodeRole: !GetAtt EKSNodeIAMRole.Arn
+      RemoteAccess:
+        Ec2SshKey: capstone
+      ScalingConfig: 
+          DesiredSize: 2
+          MaxSize: 2
+          MinSize: 2
+      Subnets: 
+         - subnet-077dc998df54a9965
+         - subnet-00610e0e07ba8ba62
+         - subnet-0bb3bb59266451697
+         - subnet-068b5e45ee629a370
+         - subnet-0837b8a85d6910d54
+    DependsOn: 
+      - EKSCluster
+      - EKSNodeIAMRole
+    

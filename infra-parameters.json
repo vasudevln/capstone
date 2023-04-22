@@ -1,0 +1,10 @@
+[
+    {
+        "ParameterKey": "EKSIAMRoleName",
+        "ParameterValue": "myEKSClusterRole"
+    },
+    {
+        "ParameterKey": "EKSNodeIAMRoleName",
+        "ParameterValue": "myEKSWorkerNodeRole"
+    }
+]

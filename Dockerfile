@@ -1,13 +1,11 @@
-FROM golang:latest
+FROM python:3.8
 
-WORKDIR /app
+WORKDIR /app 
 
-COPY /app/go.mod /app/go.sum /app/main.go ./
+COPY . app/ /app/
 
-RUN go mod download
-
-RUN CGO_ENABLED=0 GOOS=linux go build -o /main
+RUN pip install -r requirements.txt
 
 EXPOSE 8080
 
-CMD ["/main"]
+CMD [ "python", "app.py" ]
