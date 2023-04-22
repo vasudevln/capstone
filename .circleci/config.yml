@@ -44,7 +44,7 @@ jobs:
       - run:
           name: Build and Upload Image
           command: |
-            docker build -t hello-wolrd .
+            docker build -t hello-world .
             docker image ls
             docker tag hello-world vasudevla/hello-world
             docker login
