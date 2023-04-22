@@ -45,7 +45,7 @@ jobs:
           name: Build and Upload Image
           command: |
             docker build -t hello-wolrd .
-            docker image ps
+            docker image ls
             docker tag hello-world vasudevla/hello-world
             docker login
             docker push vasudevla/hello-world
