@@ -62,7 +62,7 @@ Resources:
   EKSNodeGroup:
     Type: AWS::EKS::Nodegroup
     Properties: 
-      ClusterName: CaptsoneCluster
+      ClusterName: CapstoneCluster
       NodegroupName: myNodeGroup
       NodeRole: !GetAtt EKSNodeIAMRole.Arn
       RemoteAccess:

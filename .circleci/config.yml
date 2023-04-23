@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-publisher:
     environment:
-      IMAGE_TAG: vasudevla/hello-world
+      IMAGE_TAG: vasudevla/hello-world:v1.0.0
     docker:
       - image: docker:stable
 
