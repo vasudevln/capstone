@@ -91,6 +91,7 @@ jobs:
       - image: circleci/python:3.7
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Install awscli and gettext-base
           command: |
@@ -108,9 +109,10 @@ jobs:
       - run:
          name: Create deployment
          command: |
-            kubectl apply -f deployment.yaml
+            echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
+            kubectl create deployment hello-world --image=vasudevla/hello-world --replicas=2 --port=8080
             kubectl get pods
-            kubectl apply -f service.yaml
+            kubectl expose deployment hello-world --type=LoadBalancer --name=my-service --port=8080 --target-port=8080
             kubectl get svc
 
 
