@@ -110,7 +110,7 @@ jobs:
          name: Create deployment and service
          command: |
             echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-            kubectl create deployment hello-world --image=vasudevla/hello-world --replicas=3 --port=8080
+            kubectl create deployment hello-world --image=vasudevla/hello-world:v1.0.0 --replicas=3 --port=8080
             sleep 60
             kubectl get pods
             kubectl expose deployment hello-world --type=LoadBalancer --name=my-service --port=8080 --target-port=8080

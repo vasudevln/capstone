@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: hello-world
-        image: vasudevla/hello-world
+        image: vasudevla/hello-world:v1.0.0
         ports:
         - containerPort: 8080
