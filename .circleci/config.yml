@@ -91,7 +91,6 @@ jobs:
           no_output_timeout: 20m
   
   create-deployment-service:
-     executor: aws-eks/python3
      steps:
         - checkout
         - aws-eks/update-kubeconfig-with-authenticator:
