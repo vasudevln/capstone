@@ -91,10 +91,16 @@ jobs:
           no_output_timeout: 20m
   
   create-deployment-service:
+    executor: aws-eks/python3
+    parameters:
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: string
      steps:
         - checkout
         - aws-eks/update-kubeconfig-with-authenticator:
-            cluster-name: CapstoneCluster
+            cluster-name: << parameters.cluster-name >>
             install-kubectl: true
         - kubernetes/create-or-update-resource:
             get-rollout-status: true
@@ -115,4 +121,5 @@ workflows:
       # - create-cluster:
       #     requires: [push-image]
       - create-deployment-service:
+          cluster-name: CaptsoneCluster
           requires: [push-image]
