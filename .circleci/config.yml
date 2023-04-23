@@ -124,6 +124,5 @@ workflows:
           requires: [build-image]
       # - create-cluster:
       #     requires: [push-image]
-      - create-deployment-service:
-          cluster-name: CaptsoneCluster
+      - create-deployment:
           requires: [push-image]
