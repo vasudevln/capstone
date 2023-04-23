@@ -1,9 +1,5 @@
 version: 2.1
 
-orbs:
-  aws-eks: circleci/aws-eks@2.2.0
-  kubernetes: circleci/kubernetes@1.3.1
-
 executors:
   docker-publisher:
     environment:
@@ -90,25 +86,33 @@ jobs:
              aws cloudformation deploy --template-file infra.yml --stack-name "capstone-cluster" --parameter-overrides file://infra-parameters.json  --tags project=capstone --capabilities CAPABILITY_NAMED_IAM
           no_output_timeout: 20m
   
-  create-deployment-service:
-    executor: aws-eks/python3
-    parameters:
-      cluster-name:
-        description: |
-          Name of the EKS cluster
-        type: string
-     steps:
-        - checkout
-        - aws-eks/update-kubeconfig-with-authenticator:
-            cluster-name: << parameters.cluster-name >>
-            install-kubectl: true
-        - kubernetes/create-or-update-resource:
-            get-rollout-status: true
-            resource-file-path: deployment.yaml
-            resource-name: helloworld-deployment
-        - kubernetes/create-or-update-resource:
-            resource-file-path: service.yaml
-            resource-name: helloworld-service
+  create-deployment:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Install awscli and gettext-base
+          command: |
+            sudo pip3 install awscli
+      - run:
+          name: Install kubectl
+          command: |
+            curl -o kubectl https://dl.k8s.io/release/v1.27.0/bin/linux/amd64/kubectl
+            chmod +x ./kubectl
+            sudo mv ./kubectl /usr/local/bin/kubectl
+      - run:
+          name: Setup kubeconfig
+          command: |
+            aws eks --region us-east-1 update-kubeconfig --name CaptsoneCluster
+      - run:
+         name: Create deployment
+         command: |
+            kubectl apply -f deployment.yaml
+            kubectl get pods
+            kubectl apply -f service.yaml
+            kubectl get svc
+
 
 workflows:
   build_and_deploy:
