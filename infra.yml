@@ -45,7 +45,7 @@ Resources:
   EKSCluster:
     Type: AWS::EKS::Cluster
     Properties: 
-      Name: CaptsoneCluster
+      Name: CapstoneCluster
       ResourcesVpcConfig: 
          SecurityGroupIds:
          - sg-081fd18da261622bf

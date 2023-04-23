@@ -56,7 +56,7 @@ jobs:
           root: .
           paths:
             - ./image.tar
-  push-image:
+  push-image-to-dockerhub:
     executor: docker-publisher
     steps:
       - checkout
@@ -72,7 +72,7 @@ jobs:
              echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
              docker push "${IMAGE_TAG}"
   
-  create-cluster:
+  create-eks-cluster:
     docker:
       - image: amazon/aws-cli
     steps:
@@ -86,7 +86,7 @@ jobs:
              aws cloudformation deploy --template-file infra.yml --stack-name "capstone-cluster" --parameter-overrides file://infra-parameters.json  --tags project=capstone --capabilities CAPABILITY_NAMED_IAM
           no_output_timeout: 20m
   
-  create-deployment:
+  deploy-container:
     docker:
       - image: circleci/python:3.7
     steps:
@@ -105,14 +105,16 @@ jobs:
       - run:
           name: Setup kubeconfig
           command: |
-            aws eks --region us-east-1 update-kubeconfig --name CaptsoneCluster
+            aws eks --region us-east-1 update-kubeconfig --name CapstoneCluster
       - run:
-         name: Create deployment
+         name: Create deployment and service
          command: |
             echo "$DOCKERHUB_PASSWORD" | docker login --username "$DOCKERHUB_USERNAME" --password-stdin
-            kubectl create deployment hello-world --image=vasudevla/hello-world --replicas=2 --port=8080
+            kubectl create deployment hello-world --image=vasudevla/hello-world --replicas=3 --port=8080
+            sleep 60
             kubectl get pods
             kubectl expose deployment hello-world --type=LoadBalancer --name=my-service --port=8080 --target-port=8080
+            sleep 60
             kubectl get svc
 
 
@@ -122,9 +124,9 @@ workflows:
       - lint
       - build-image:
           requires: [lint]
-      - push-image:
+      - push-image-to-dockerhub:
           requires: [build-image]
-      # - create-cluster:
-      #     requires: [push-image]
-      - create-deployment:
-          requires: [push-image]
+      - create-eks-cluster:
+          requires: [push-image-to-dockerhub]
+      - deploy-container:
+          requires: [create-eks-cluster]
